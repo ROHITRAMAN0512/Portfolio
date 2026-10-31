@@ -14,7 +14,7 @@ export function Hero() {
       className="relative isolate overflow-hidden pb-20 pt-10 md:pb-28 md:pt-16"
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-[-12%] h-[480px] w-[820px] max-w-full -translate-x-1/2 rounded-full bg-accent/10 blur-[120px]" />
+        <div className="absolute left-1/2 top-[-130px] h-[480px] lg:top-[-88px] w-[820px] max-w-full -translate-x-1/2 rounded-full bg-accent/10 blur-[120px]" />
         <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(var(--color-line)_1px,transparent_1px),linear-gradient(90deg,var(--color-line)_1px,transparent_1px)] [background-size:56px_56px] [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
       </div>
 
