@@ -96,6 +96,24 @@ Without the Blueprint: **New**, **Static Site**, build command `npm ci && npm ru
 
 After this, every push to the branch Render is watching updates the live site by itself.
 
+## Keep it free
+
+Checked against GitHub's, Render's and Cloudflare's own pages on 31 October 2026. Plans change, so look again before you rely on any number.
+
+| Part | Cost | Limit that matters |
+|---|---|---|
+| GitHub private repo | Free | None for one site |
+| Render Static Site (Hobby workspace) | No monthly fee | 5 GB of traffic and 500 build minutes a month |
+| Web3Forms contact form | Free per their public listings | 250 messages a month. The site works without it |
+| Address ending in `.onrender.com` | Free | None |
+| Your own domain name | Buying one costs money; attaching it to Render is free (2 included) | Optional, skip it to stay at zero |
+
+**Do not add a payment method to Render.** With no card on file, Render cannot charge you. If a month ever goes over the free amounts, Render switches the site off until the next month instead. With a card on file it would bill the extra, at $0.15 per GB of traffic and $5 per 1,000 build minutes.
+
+This site is light: a first visit downloads about 225 KB, so 5 GB is roughly 20,000 first visits a month. Repeat visitors download far less because the files are cached.
+
+If you ever want no traffic limit at all, Cloudflare Pages is free with 500 builds a month, and its limits page lists no bandwidth cap. The same build works there (see below).
+
 ## Cloudflare Pages works too
 
 Use the same repo. Build command `npm run build`, output folder `dist`, and set `NODE_VERSION` to `22` plus the two variables.
