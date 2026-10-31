@@ -4,6 +4,8 @@ A one-page website for getting freelance backend work. It shows what Rohit build
 
 Built with React, TypeScript, Vite, Tailwind CSS, Framer Motion and Lucide icons.
 
+**Live:** https://rohit-portfolio-cn7.pages.dev (hosted free on Cloudflare Pages, see [Where it is hosted](#where-it-is-hosted-cloudflare-pages)).
+
 - Design spec: [docs/superpowers/specs/2026-10-31-portfolio-design.md](docs/superpowers/specs/2026-10-31-portfolio-design.md)
 - Build plan: [docs/superpowers/plans/2026-10-31-portfolio.md](docs/superpowers/plans/2026-10-31-portfolio.md)
 
@@ -76,17 +78,43 @@ Please also read the clinic project text in `projects.ts` once, especially your 
 
 1. Go to web3forms.com and enter your email address. They email you an **access key**.
 2. For local testing, copy `.env.example` to `.env.local` and paste the key after `VITE_WEB3FORMS_KEY=`.
-3. For the live site, add the same name and value in Render (see below).
+3. For the live site, add the same name and value in Cloudflare Pages (see below).
 4. If your Web3Forms plan allows it, limit the key to your site's address.
 
 The key is public by design: it can only send messages to your email. Without it, the form still works by opening the visitor's email app.
 
-## Put it online on Render (free)
+## Where it is hosted: Cloudflare Pages
+
+Live address: https://rohit-portfolio-cn7.pages.dev
+
+It is a Cloudflare Pages project connected to the private GitHub repo `ROHITRAMAN0512/Portfolio`. Every push to `main` rebuilds and publishes it by itself.
+
+| Setting | Value |
+|---|---|
+| Production branch | `main` |
+| Framework preset | None |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Environment variable | `NODE_VERSION` = `22` |
+
+`public/_headers` tells Cloudflare to keep the built files in the browser for a year (their names change whenever they change), so repeat visitors do not download them again.
+
+To turn on the share preview and the sitemap, give the site its own address and publish again:
+
+1. In Cloudflare, open the project, then **Settings**, then **Variables and Secrets**.
+2. Add `VITE_SITE_URL` with the live address above, for Production. To make the contact form send directly, also add `VITE_WEB3FORMS_KEY` with your Web3Forms key.
+3. Open **Deployments**, choose the latest one, and use **Retry deployment**.
+
+Cloudflare Pages is free with 500 builds a month, and its limits page lists no bandwidth cap. No card is needed.
+
+## Alternative: Render (free, but read this first)
 
 A Render **Static Site** is free and never goes to sleep. This is different from Render's free "web service", which sleeps when idle. This site has no server, so it does not need one.
 
-1. Put the project on GitHub (a new, empty repo; push this folder to it). Nothing has been pushed for you. The site's code is on the branch `feature/build-portfolio`; the `main` branch holds only the design documents. Either merge that branch into `main` before you deploy, or tell Render to use `feature/build-portfolio` (in step 2 pick that branch, or later under **Settings**, **Branch**). A deploy of `main` before the merge will fail because there is no site in it yet.
-2. In Render, choose **New**, then **Blueprint**, pick the repo, and click **Apply**. Render reads `render.yaml` and sets everything up.
+**The catch:** Render's free allowance (5 GB of traffic a month) is shared by every service in the same workspace, and with no card on file Render switches off the whole workspace if it goes over. Do not put the portfolio in a workspace that also runs something you need, such as the clinic backend. Create a separate free workspace for it.
+
+1. The code is on GitHub at `ROHITRAMAN0512/Portfolio`. Keep that repo private.
+2. In Render, choose **New**, then **Blueprint**, pick the repo and the `main` branch, and click **Apply**. Render reads `render.yaml` and sets everything up.
 3. When asked, fill in `VITE_WEB3FORMS_KEY`. Leave `VITE_SITE_URL` empty for now. If Render will not accept an empty value, type `https://example.com` and replace it in step 5.
 4. Wait for the first deploy. Render gives you an address like `https://rohit-portfolio.onrender.com`.
 5. Go to the service's **Environment** tab, set `VITE_SITE_URL` to that address, and redeploy. Now the share preview and sitemap work.
@@ -103,20 +131,17 @@ Checked against GitHub's, Render's and Cloudflare's own pages on 31 October 2026
 | Part | Cost | Limit that matters |
 |---|---|---|
 | GitHub private repo | Free | None for one site |
-| Render Static Site (Hobby workspace) | No monthly fee | 5 GB of traffic and 500 build minutes a month |
+| Cloudflare Pages (where the site is hosted) | Free, no card | 500 builds a month. Its limits page lists no bandwidth cap |
+| Render Static Site (Hobby workspace), the alternative | No monthly fee | 5 GB of traffic and 500 build minutes a month, shared by the whole workspace |
 | Web3Forms contact form | Free per their public listings | 250 messages a month. The site works without it |
 | Address ending in `.onrender.com` | Free | None |
 | Your own domain name | Buying one costs money; attaching it to Render is free (2 included) | Optional, skip it to stay at zero |
 
-**Do not add a payment method to Render.** With no card on file, Render cannot charge you. If a month ever goes over the free amounts, Render switches the site off until the next month instead. With a card on file it would bill the extra, at $0.15 per GB of traffic and $5 per 1,000 build minutes.
+**If you use Render, do not add a payment method to it.** With no card on file, Render cannot charge you. If a month ever goes over the free amounts, Render switches the site off until the next month instead. With a card on file it would bill the extra, at $0.15 per GB of traffic and $5 per 1,000 build minutes.
 
 This site is light: a first visit downloads about 225 KB, so 5 GB is roughly 20,000 first visits a month. Repeat visitors download far less because the files are cached.
 
-If you ever want no traffic limit at all, Cloudflare Pages is free with 500 builds a month, and its limits page lists no bandwidth cap. The same build works there (see below).
-
-## Cloudflare Pages works too
-
-Use the same repo. Build command `npm run build`, output folder `dist`, and set `NODE_VERSION` to `22` plus the two variables.
+The site is on Cloudflare Pages so that it never competes for that 5 GB with anything else you run on Render.
 
 ## Before you share the link
 

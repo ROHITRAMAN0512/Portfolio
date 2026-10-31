@@ -1,0 +1,4 @@
+# Cloudflare Pages custom headers (Render reads render.yaml instead; it ignores this file).
+# Built file names change whenever their content changes, so they can be cached for a year.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
