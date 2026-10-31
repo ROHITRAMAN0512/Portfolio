@@ -9,6 +9,8 @@
   --color-text: #e6eaf2;
   --color-muted: #8b97ab;
   --color-accent: #2dd4bf;
+  /* Functional colour for form errors only. */
+  --color-danger: #f87171;
 
   --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;

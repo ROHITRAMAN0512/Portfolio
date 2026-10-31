@@ -6,7 +6,7 @@ const SHORTENED_NOTE = '…(message shortened, please paste the rest)'
 export function buildMailto(to: string, input: ContactInput): string {
   const name = input.name.trim()
   const email = input.email.trim()
-  const projectType = input.projectType.trim()
+  const projectType = input.projectType.trim() || 'Not specified'
   const message = input.message.trim()
 
   const subject = encodeURIComponent(`Project enquiry from ${name}`)

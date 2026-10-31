@@ -21,6 +21,11 @@ describe('buildMailto', () => {
     )
   })
 
+  test('an empty project type is written as "Not specified"', () => {
+    const href = buildMailto('me@x.com', { ...input, projectType: '' })
+    expect(bodyOf(href)).toContain('Project type: Not specified\n')
+  })
+
   test('a newline in the message is encoded as %0A', () => {
     const href = buildMailto('me@x.com', { ...input, message: 'First line of the message.\nSecond line here.' })
     expect(href).toContain('%0A')
