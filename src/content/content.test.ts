@@ -55,9 +55,56 @@ describe('site', () => {
     expect(site.description.length).toBeLessThanOrEqual(155)
   })
 
+  test('site.url is an https origin with no path', () => {
+    const url = new URL(site.url)
+    expect(url.protocol).toBe('https:')
+    expect(url.pathname).toBe('/')
+    expect(site.url.endsWith('/')).toBe(false)
+  })
+
   test('nav ids are unique', () => {
     const ids = site.nav.map((n) => n.id)
     expect(new Set(ids).size).toBe(ids.length)
+  })
+})
+
+describe('public claims match the verified code (31 Oct 2026)', () => {
+  const healthcare = () => projects.find((p) => p.id === 'healthcare')!
+  const text = () => JSON.stringify(healthcare())
+
+  test('states four roles and never five', () => {
+    expect(healthcare().facts?.some((f) => /roles/i.test(f.label) && f.value === '4')).toBe(true)
+    expect(text()).not.toMatch(/\bfive\b|\b5 (staff )?roles\b/i)
+  })
+
+  test('has no filler facts', () => {
+    for (const f of healthcare().facts ?? []) expect(f.value).not.toBe('1')
+  })
+
+  test('describes clinic separation together with its continuity-of-care exception', () => {
+    expect(text()).toMatch(/continuity of care/i)
+    expect(text()).not.toMatch(/limited to their own clinic/i)
+  })
+
+  test('only claims a preview step for patient imports', () => {
+    const importLine = healthcare().features.find((f) => /bulk/i.test(f))
+    expect(importLine).toBeDefined()
+    expect(importLine).toMatch(/patients[^.]*preview/i)
+    expect(importLine).not.toMatch(/(medicines|lab tests)[^.]*preview/i)
+  })
+
+  test('makes no security-testing claim the files do not evidence', () => {
+    expect(text()).not.toMatch(/low-privilege|re-?tested|penetration|pen test/i)
+  })
+
+  test('leaks no access-control internals, secrets or configuration details', () => {
+    expect(text()).not.toMatch(
+      /\b(IDOR|bypass\w*|localStorage|rate[- ]?limit\w*|refresh token|secret\w*|credential\w*|password\w*|hostname)\b/i,
+    )
+  })
+
+  test('omits crude counts (controllers, entities, endpoint annotations)', () => {
+    expect(text()).not.toMatch(/\b(46|37|190|193)\b/)
   })
 })
 

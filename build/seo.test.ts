@@ -1,7 +1,26 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, test } from 'vitest'
 import { site } from '../src/content/site'
-import { buildJsonLd, buildRobots, buildSitemap, headTags, metaTags, noscriptBlock } from './seo'
+import { buildJsonLd, buildRobots, buildSitemap, headTags, metaTags, noscriptBlock, siteUrlFrom } from './seo'
+
+describe('siteUrlFrom', () => {
+  test('falls back to the address in site.ts when the environment value is missing or blank', () => {
+    expect(siteUrlFrom(undefined)).toBe(site.url)
+    expect(siteUrlFrom('')).toBe(site.url)
+    expect(siteUrlFrom('   ')).toBe(site.url)
+  })
+
+  test('lets an environment value override it', () => {
+    expect(siteUrlFrom(' https://my-domain.example ')).toBe('https://my-domain.example')
+  })
+
+  test('with no environment value, the share-preview tags and sitemap are still produced', () => {
+    const tags = headTags(siteUrlFrom(undefined))
+    expect(tags).toContain(`property="og:image" content="${site.url}/og-image.png"`)
+    expect(tags).toContain(`rel="canonical" href="${site.url}/"`)
+    expect(buildSitemap(siteUrlFrom(undefined))).toContain(`<loc>${site.url}/</loc>`)
+  })
+})
 
 describe('headTags', () => {
   test('is empty when no site URL is set', () => {
@@ -55,6 +74,10 @@ describe('buildJsonLd', () => {
     expect(data['@type']).toBe('Person')
     expect(data.name).toBe(site.name)
     expect(data.sameAs).toEqual(expect.arrayContaining([site.github, site.linkedin]))
+  })
+
+  test('points at the site address', () => {
+    expect(data.url).toBe(site.url)
   })
 
   test('lists skills and has no ratings or reviews', () => {

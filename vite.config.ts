@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 import { loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { buildJsonLd, buildRobots, buildSitemap, headTags, metaTags, noscriptBlock } from './build/seo'
+import { buildJsonLd, buildRobots, buildSitemap, headTags, metaTags, noscriptBlock, siteUrlFrom } from './build/seo'
 
 const PRELOADED_FONTS = /(instrument-serif-latin-400-normal|inter-latin-wght-normal)-[\w-]+\.woff2$/
 
@@ -35,7 +35,7 @@ function seoPlugin(siteUrl: string | undefined): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
   return {
-    plugins: [react(), tailwindcss(), seoPlugin(env.VITE_SITE_URL || undefined)],
+    plugins: [react(), tailwindcss(), seoPlugin(siteUrlFrom(env.VITE_SITE_URL))],
     // Native file events were missed on this machine's drive; polling is dev-only.
     server: { watch: { usePolling: true, interval: 300 } },
     test: {

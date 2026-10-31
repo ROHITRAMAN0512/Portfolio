@@ -15,6 +15,12 @@ function normaliseSiteUrl(siteUrl: string | undefined): string | undefined {
   }
 }
 
+/** The environment's VITE_SITE_URL if it has one, otherwise the address in site.ts. */
+export function siteUrlFrom(envValue: string | undefined): string {
+  const trimmed = envValue?.trim()
+  return trimmed ? trimmed : site.url
+}
+
 /** Tags that need the absolute site URL. Empty when it is not known. */
 export function headTags(siteUrl: string | undefined): string {
   const root = normaliseSiteUrl(siteUrl)
@@ -65,6 +71,7 @@ export function buildJsonLd(): string {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: site.name,
+    url: site.url,
     jobTitle: 'Java Backend Developer',
     description: site.description,
     address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressCountry: 'IN' },

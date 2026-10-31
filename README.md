@@ -66,7 +66,7 @@ The site works without all of these. Here is what it does until you add them.
 | Item | Until then |
 |---|---|
 | Web3Forms key | The contact form opens the visitor's email app with the message filled in |
-| Site address (`VITE_SITE_URL`) | The canonical link, share-preview image link and sitemap are left out |
+| Site address | Already set in `src/content/site.ts` (`url`), so the share preview, canonical link and sitemap work. If you get your own domain, change it there. `VITE_SITE_URL` can override it without a code change |
 | Screenshots of the clinic project | None are shown |
 | Availability line, for example "Currently taking on select projects" | Not shown |
 | Phone or WhatsApp | Not shown |
@@ -99,10 +99,12 @@ It is a Cloudflare Pages project connected to the private GitHub repo `ROHITRAMA
 
 `public/_headers` tells Cloudflare to keep the built files in the browser for a year (their names change whenever they change), so repeat visitors do not download them again.
 
-To turn on the share preview and the sitemap, give the site its own address and publish again:
+The site's own address lives in `src/content/site.ts` (`url`), so the share preview, canonical link and sitemap need no dashboard step. If you ever get your own domain, change that one line.
+
+To make the contact form send messages directly, add your Web3Forms key in Cloudflare. The key is never written into the repo or into chat:
 
 1. In Cloudflare, open the project, then **Settings**, then **Variables and Secrets**.
-2. Add `VITE_SITE_URL` with the live address above, for Production. To make the contact form send directly, also add `VITE_WEB3FORMS_KEY` with your Web3Forms key.
+2. Add `VITE_WEB3FORMS_KEY` with your key, for Production.
 3. Open **Deployments**, choose the latest one, and use **Retry deployment**.
 
 Cloudflare Pages is free with 500 builds a month, and its limits page lists no bandwidth cap. No card is needed.
@@ -115,10 +117,10 @@ A Render **Static Site** is free and never goes to sleep. This is different from
 
 1. The code is on GitHub at `ROHITRAMAN0512/Portfolio`. Keep that repo private.
 2. In Render, choose **New**, then **Blueprint**, pick the repo and the `main` branch, and click **Apply**. Render reads `render.yaml` and sets everything up.
-3. When asked, fill in `VITE_WEB3FORMS_KEY`. Leave `VITE_SITE_URL` empty for now. If Render will not accept an empty value, type `https://example.com` and replace it in step 5.
+3. When asked, fill in `VITE_WEB3FORMS_KEY` (leave it empty if you do not have one yet). Leave `VITE_SITE_URL` empty, because the site address is already in `src/content/site.ts`. If Render will not accept an empty value, type the live address.
 4. Wait for the first deploy. Render gives you an address like `https://rohit-portfolio.onrender.com`.
-5. Go to the service's **Environment** tab, set `VITE_SITE_URL` to that address, and redeploy. Now the share preview and sitemap work.
-6. Optional: add your own domain under **Settings**, then **Custom Domains**, and update `VITE_SITE_URL` to match.
+5. Change `url` in `src/content/site.ts` to that address (or set `VITE_SITE_URL` in the service's **Environment** tab) and publish again, so the share preview and sitemap point at the right place.
+6. Optional: add your own domain under **Settings**, then **Custom Domains**, and update `url` to match.
 
 Without the Blueprint: **New**, **Static Site**, build command `npm ci && npm run build`, publish directory `dist`, and add the two variables yourself.
 

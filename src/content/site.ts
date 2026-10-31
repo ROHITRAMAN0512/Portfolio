@@ -1,6 +1,8 @@
 import type { NavItem } from './types'
 
 export interface Site {
+  /** Public address of the site, no trailing slash. Used for share previews, canonical links and the sitemap. */
+  url: string
   name: string
   title: string
   description: string
@@ -21,6 +23,7 @@ export interface Site {
 }
 
 export const site: Site = {
+  url: 'https://rohit-portfolio-cn7.pages.dev',
   name: 'Rohit Raman',
   title: 'Rohit Raman — Java Backend Developer for Freelance Projects',
   description:
