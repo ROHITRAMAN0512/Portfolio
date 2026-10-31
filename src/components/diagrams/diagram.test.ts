@@ -1,14 +1,16 @@
 import { describe, expect, test } from 'vitest'
-import { heroDiagram } from './heroDiagram'
 import { projects } from '../../content/projects'
 import type { ArchEdge, ArchNode } from '../../content/types'
 
 type Data = { nodes: ArchNode[]; edges: ArchEdge[] }
 
-const diagrams: [string, Data][] = [
-  ['hero', heroDiagram],
-  ...projects.flatMap((p): [string, Data][] => (p.architecture ? [[p.id, p.architecture]] : [])),
-]
+const diagrams: [string, Data][] = projects.flatMap((p): [string, Data][] =>
+  p.architecture ? [[p.id, p.architecture]] : [],
+)
+
+test('there is at least one diagram to check', () => {
+  expect(diagrams.length).toBeGreaterThan(0)
+})
 
 describe.each(diagrams)('%s diagram', (_name, d) => {
   test('node ids are unique', () => {
@@ -33,27 +35,14 @@ describe.each(diagrams)('%s diagram', (_name, d) => {
     }
   })
 
-  test('every node has a non-empty label', () => {
-    for (const n of d.nodes) expect(n.label.trim()).not.toBe('')
-  })
-})
-
-describe('hero diagram', () => {
-  test('every node has a note', () => {
-    for (const n of heroDiagram.nodes) expect(n.note?.trim()).toBeTruthy()
-  })
-
-  test('the request flow follows existing edges', () => {
-    const ids = new Set(heroDiagram.nodes.map((n) => n.id))
-    expect(heroDiagram.flow.length).toBeGreaterThanOrEqual(2)
-    for (const id of heroDiagram.flow) expect(ids.has(id)).toBe(true)
-    for (let i = 0; i < heroDiagram.flow.length - 1; i++) {
-      const a = heroDiagram.flow[i]
-      const b = heroDiagram.flow[i + 1]
-      const connected = heroDiagram.edges.some(
-        (e) => (e.from === a && e.to === b) || (e.from === b && e.to === a),
-      )
-      expect(connected).toBe(true)
+  test('every node has a label and a one-line note for hover, focus and screen readers', () => {
+    for (const n of d.nodes) {
+      expect(n.label.trim()).not.toBe('')
+      expect(n.note?.trim()).toBeTruthy()
     }
+  })
+
+  test('no node text leaks access-control internals', () => {
+    expect(JSON.stringify(d)).not.toMatch(/\b(JWT|tokens?|secrets?|passwords?|Hibernate)\b/i)
   })
 })

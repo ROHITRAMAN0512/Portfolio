@@ -1,7 +1,32 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, test } from 'vitest'
 import { site } from '../src/content/site'
-import { buildJsonLd, buildRobots, buildSitemap, headTags, metaTags, noscriptBlock, siteUrlFrom } from './seo'
+import { buildJsonLd, buildRobots, buildSitemap, headTags, metaTags, noscriptBlock, pageKeyFor, siteUrlFrom } from './seo'
+
+describe('pages', () => {
+  test('pageKeyFor maps html files to pages, on either kind of path separator', () => {
+    expect(pageKeyFor('E:/CLAUDE/portfolio/index.html')).toBe('home')
+    expect(pageKeyFor('/index.html')).toBe('home')
+    expect(pageKeyFor('E:\\CLAUDE\\portfolio\\work\\healthcare\\index.html')).toBe('healthcare')
+    expect(pageKeyFor('/work/healthcare/index.html')).toBe('healthcare')
+  })
+
+  test('every page has a unique slash-terminated path, a title and a description of at most 155 characters', () => {
+    const all = Object.values(site.pages)
+    expect(new Set(all.map((p) => p.path)).size).toBe(all.length)
+    for (const p of all) {
+      expect(p.path.startsWith('/') && p.path.endsWith('/')).toBe(true)
+      expect(p.title.trim()).not.toBe('')
+      expect(p.description.length).toBeGreaterThan(0)
+      expect(p.description.length).toBeLessThanOrEqual(155)
+    }
+  })
+
+  test('the home page keeps the approved title', () => {
+    expect(site.pages.home.title).toBe(site.title)
+    expect(site.pages.home.path).toBe('/')
+  })
+})
 
 describe('siteUrlFrom', () => {
   test('falls back to the address in site.ts when the environment value is missing or blank', () => {
@@ -41,16 +66,26 @@ describe('headTags', () => {
   })
 })
 
+describe('headTags for a page other than home', () => {
+  test('points the canonical link and og:url at that page, keeping the shared image', () => {
+    const tags = headTags('https://example.com', '/work/healthcare/')
+    expect(tags).toContain('rel="canonical" href="https://example.com/work/healthcare/"')
+    expect(tags).toContain('property="og:url" content="https://example.com/work/healthcare/"')
+    expect(tags).toContain('property="og:image" content="https://example.com/og-image.png"')
+  })
+})
+
 describe('buildSitemap', () => {
   test('is null when no site URL is set', () => {
     expect(buildSitemap(undefined)).toBeNull()
   })
 
-  test('has exactly one <loc> for the site root', () => {
+  test('lists every page exactly once', () => {
     const xml = buildSitemap('https://example.com/')
     expect(xml).not.toBeNull()
-    expect(xml!.match(/<loc>/g)).toHaveLength(1)
+    expect(xml!.match(/<loc>/g)).toHaveLength(Object.keys(site.pages).length)
     expect(xml).toContain('<loc>https://example.com/</loc>')
+    expect(xml).toContain('<loc>https://example.com/work/healthcare/</loc>')
   })
 })
 
@@ -90,6 +125,28 @@ describe('buildJsonLd', () => {
   })
 })
 
+describe('per-page metadata', () => {
+  test('metaTags uses the page title and description, and marks the case study as an article', () => {
+    const home = metaTags('home')
+    const study = metaTags('healthcare')
+    expect(home).toContain('property="og:type" content="website"')
+    expect(study).toContain('property="og:type" content="article"')
+    expect(study).toContain(`name="description" content="${site.pages.healthcare.description}"`)
+    expect(study).toContain(`property="og:title" content="${site.pages.healthcare.title}"`)
+  })
+
+  test('the case study structured data is an Article by the same person, with no ratings or dates', () => {
+    const study = JSON.parse(buildJsonLd('healthcare'))
+    expect(study['@type']).toBe('Article')
+    expect(study.headline).toBe(site.pages.healthcare.title)
+    expect(study.url).toBe(`${site.url}${site.pages.healthcare.path}`)
+    expect(study.author.name).toBe(site.name)
+    expect(study.author.sameAs).toEqual(expect.arrayContaining([site.github, site.linkedin]))
+    expect(JSON.stringify(study)).not.toMatch(/rating|review|datePublished|dateModified/i)
+    expect(buildJsonLd('healthcare')).not.toContain('<')
+  })
+})
+
 describe('metaTags and noscriptBlock', () => {
   test('metaTags carries the description and social card tags', () => {
     const tags = metaTags()
@@ -105,9 +162,15 @@ describe('metaTags and noscriptBlock', () => {
   })
 })
 
-describe('index.html', () => {
-  test('its <title> equals the approved site title', () => {
-    const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
-    expect(html).toContain(`<title>${site.title}</title>`)
+describe('html entry files', () => {
+  test.each([
+    ['home', '../index.html'],
+    ['healthcare', '../work/healthcare/index.html'],
+  ] as const)('the %s page <title> equals its page title, and it has every SEO placeholder', (key, file) => {
+    const html = readFileSync(new URL(file, import.meta.url), 'utf8')
+    expect(html).toContain(`<title>${site.pages[key].title}</title>`)
+    for (const marker of ['<!--seo-meta-->', '<!--seo-head-->', '<!--json-ld-->', '<!--noscript-->']) {
+      expect(html).toContain(marker)
+    }
   })
 })

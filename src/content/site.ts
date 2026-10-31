@@ -1,4 +1,8 @@
-import type { NavItem } from './types'
+import type { NavItem, PageKey, PageMeta } from './types'
+
+const homeTitle = 'Rohit Raman — Java Backend Developer for Freelance Projects'
+const homeDescription =
+  'Java backend developer in Bengaluru. I build secure APIs, microservices and databases for healthcare and fintech products, and keep them running.'
 
 export interface Site {
   /** Public address of the site, no trailing slash. Used for share previews, canonical links and the sitemap. */
@@ -6,6 +10,8 @@ export interface Site {
   name: string
   title: string
   description: string
+  /** Per-page address, title and description (used for tags, sitemap and structured data). */
+  pages: Record<PageKey, PageMeta>
   role: string
   location: string
   email: string
@@ -19,15 +25,23 @@ export interface Site {
   }
   contact: { heading: string; intro: string }
   sections: Record<'work' | 'services' | 'expertise' | 'process' | 'about', { eyebrow: string; title: string }>
-  ctas: Record<'work' | 'services' | 'process', { text: string; button: string }>
+  ctas: Record<'services' | 'process', { text: string; button: string }>
 }
 
 export const site: Site = {
   url: 'https://rohit-portfolio-cn7.pages.dev',
   name: 'Rohit Raman',
-  title: 'Rohit Raman — Java Backend Developer for Freelance Projects',
-  description:
-    'Java backend developer in Bengaluru. I build secure APIs, microservices and databases for healthcare and fintech products, and keep them running.',
+  title: homeTitle,
+  description: homeDescription,
+  pages: {
+    home: { path: '/', title: homeTitle, description: homeDescription },
+    healthcare: {
+      path: '/work/healthcare/',
+      title: 'Healthcare platform case study — Rohit Raman',
+      description:
+        'How I built a multi-clinic healthcare platform: three role-based portals, one Java and Spring Boot API, and the engineering decisions behind it.',
+    },
+  },
   role: 'Java backend developer',
   location: 'Bengaluru, India',
   email: 'rohit6363126@gmail.com',
@@ -42,9 +56,9 @@ export const site: Site = {
     { id: 'contact', label: 'Contact' },
   ],
   hero: {
-    eyebrow: 'Java backend developer · Bengaluru, India',
-    headline: 'Backend systems that hold up in production.',
-    sub: "I'm Rohit Raman. I design and build secure APIs, microservices and databases for healthcare and fintech products, and I stay on to keep them running.",
+    eyebrow: 'Java Backend Developer · Bengaluru, India',
+    headline: 'Java backend development for products where mistakes are expensive.',
+    sub: "I'm Rohit Raman. I design and build Spring Boot APIs, databases and role-based access for healthcare and fintech products, then test, deploy and maintain them.",
   },
   about: {
     paragraphs: [
@@ -75,7 +89,6 @@ export const site: Site = {
     about: { eyebrow: 'About', title: 'Software built to be relied on' },
   },
   ctas: {
-    work: { text: 'Have a similar system in mind?', button: 'Tell me about it' },
     services: { text: 'Not sure which one you need?', button: 'Describe the problem' },
     process: { text: 'Ready to talk it through?', button: 'Start with a short conversation' },
   },

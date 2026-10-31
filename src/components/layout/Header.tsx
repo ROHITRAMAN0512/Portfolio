@@ -6,11 +6,17 @@ import { Button } from '../ui/Button'
 
 const navIds = site.nav.map((n) => n.id)
 
-export function Header() {
+interface HeaderProps {
+  /** True on the home page; on other pages the links point back at "/#section". */
+  home?: boolean
+}
+
+export function Header({ home = true }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
-  const active = useActiveSection(navIds)
+  const active = useActiveSection(home ? navIds : [])
+  const base = home ? '' : '/'
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -40,7 +46,7 @@ export function Header() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-4 sm:px-6">
-        <a href="#top" className="inline-flex min-h-11 items-center font-display text-xl text-text">
+        <a href={`${base}#top`} className="inline-flex min-h-11 items-center font-display text-xl text-text">
           {site.name}
         </a>
 
@@ -48,14 +54,14 @@ export function Header() {
           {site.nav.map((item) => (
             <a
               key={item.id}
-              href={`#${item.id}`}
+              href={`${base}#${item.id}`}
               aria-current={active === item.id ? 'true' : undefined}
               className={`inline-flex min-h-11 items-center rounded-md px-3 text-sm transition-colors ${linkColor(item.id)}`}
             >
               {item.label}
             </a>
           ))}
-          <Button href="#contact" className="ml-3">
+          <Button href={`${base}#contact`} className="ml-3">
             Let&apos;s talk
           </Button>
         </nav>
@@ -79,7 +85,7 @@ export function Header() {
             {site.nav.map((item) => (
               <li key={item.id}>
                 <a
-                  href={`#${item.id}`}
+                  href={`${base}#${item.id}`}
                   aria-current={active === item.id ? 'true' : undefined}
                   onClick={() => setMenuOpen(false)}
                   className={`flex min-h-11 items-center rounded-md text-base transition-colors ${linkColor(item.id)}`}
@@ -89,7 +95,7 @@ export function Header() {
               </li>
             ))}
             <li className="pt-2">
-              <Button href="#contact" onClick={() => setMenuOpen(false)} className="w-full">
+              <Button href={`${base}#contact`} onClick={() => setMenuOpen(false)} className="w-full">
                 Let&apos;s talk
               </Button>
             </li>

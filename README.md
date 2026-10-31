@@ -41,21 +41,23 @@ All the words and data are in `src/content/`. You do not need to touch the compo
 | `services.ts` | The 7 services |
 | `skills.ts` | The skill groups |
 | `process.ts` | The 5 steps of how a project runs |
-| `projects.ts` | The featured projects |
+| `projects.ts` | The project cards on the home page, and the diagram |
+| `caseStudy.ts` | The full case study page: problem, decisions, workflow, testing, stack |
 
-## Add a project
+The site has two pages: the home page (`index.html`) and the case study (`work/healthcare/index.html`). Both are built together and listed in the sitemap. Page titles and descriptions are in `site.ts` under `pages`.
 
-Open `src/content/projects.ts` and add one more object to the list. Only `id`, `title`, `tagline`, `problem`, `role`, `features` and `stack` are required. Everything else is optional, and anything you leave out simply does not show, so there are no empty boxes.
+## Rules for what goes on the site
 
-| Optional field | What it shows |
-|---|---|
-| `status` | A small line above the title, for example "Deployed" |
-| `facts` | Big numbers on the card, for example `{ label: 'Roles', value: '5' }`. Real counts only |
-| `architecture` | A diagram. Each block has `x` and `y` as a percentage (15 to 85 across, 0 to 100 down) |
-| `media` | Screenshots. Put the files in `public/projects/<id>/` and use `/projects/<id>/file.png` |
-| `links` | Buttons to a repo, demo or article. Must start with `https://` |
+The tests enforce these, so a change that breaks them will not build:
 
-The `id` becomes the web address of the case study: `yoursite.com/#<id>` opens it directly.
+- Client outcomes and high-level decisions only. Never describe how access control works inside, name a weakness, or show file paths, class names, secrets, hostnames or configuration.
+- No client or employer names, no percentages, no invented numbers. Every number must be counted against the real code first. The only counts allowed in the case study are 3 portals, 4 login roles, and "355 backend unit tests (counted 31 Oct 2026)". Re-count before you publish a new number.
+- No screenshots until you have checked them for patient and clinic details.
+
+## Add another project
+
+1. Add a card to `src/content/projects.ts`: `id`, `title`, `tagline`, `stack` and `href` (the page's path). `status`, `facts` and `architecture` are optional; anything left out does not show. `architecture` blocks have `x` and `y` as a percentage (15 to 85 across, 0 to 100 down).
+2. Add its page: a new folder with an `index.html` (copy `work/healthcare/index.html`), an entry file like `src/case-study.tsx`, a content file like `caseStudy.ts`, and one line in `site.ts` under `pages`. The two inputs in `vite.config.ts` list the pages to build.
 
 For screenshots of client work, hide all patient and client details first.
 
@@ -67,12 +69,12 @@ The site works without all of these. Here is what it does until you add them.
 |---|---|
 | Web3Forms key | The contact form opens the visitor's email app with the message filled in |
 | Site address | Already set in `src/content/site.ts` (`url`), so the share preview, canonical link and sitemap work. If you get your own domain, change it there. `VITE_SITE_URL` can override it without a code change |
-| Screenshots of the clinic project | None are shown |
+| Screenshots of the clinic project | None are shown (no gallery and no placeholder) |
 | Availability line, for example "Currently taking on select projects" | Not shown |
 | Phone or WhatsApp | Not shown |
 | Patient self-registration by QR code (built, not deployed yet) | Left out of the feature list. Add it to `projects.ts` once it is live |
 
-Please also read the clinic project text in `projects.ts` once, especially your role, and change anything that is not exactly right.
+Please also read the case study text in `caseStudy.ts` once, especially your role, and change anything that is not exactly right.
 
 ## Set up the contact form (free)
 

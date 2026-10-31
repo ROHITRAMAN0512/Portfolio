@@ -4,8 +4,10 @@ import { services } from './services'
 import { skillGroups } from './skills'
 import { processSteps } from './process'
 import { projects } from './projects'
+import { healthcareCaseStudy as study } from './caseStudy'
 
-const everything = { site, services, skillGroups, processSteps, projects }
+const everything = { site, services, skillGroups, processSteps, projects, study }
+const publicText = JSON.stringify({ projects, study })
 
 describe('projects', () => {
   test('project ids are unique and match /^[a-z0-9-]+$/', () => {
@@ -14,37 +16,30 @@ describe('projects', () => {
     for (const id of ids) expect(id).toMatch(/^[a-z0-9-]+$/)
   })
 
-  test('every project has non-empty problem, role, at least one feature and one stack group', () => {
+  test('every project has a tagline, a stack and a case-study link that is one of the site pages', () => {
+    const paths = Object.values(site.pages).map((p) => p.path)
     for (const p of projects) {
-      expect(p.problem.trim()).not.toBe('')
-      expect(p.role.trim()).not.toBe('')
-      expect(p.features.length).toBeGreaterThan(0)
+      expect(p.tagline.trim()).not.toBe('')
       expect(p.stack.length).toBeGreaterThan(0)
+      expect(paths).toContain(p.href)
     }
   })
 
-  test('the healthcare project never mentions kafka, microservice, keycloak or aws', () => {
-    const healthcare = projects.find((p) => p.id === 'healthcare')
-    expect(healthcare).toBeDefined()
-    expect(JSON.stringify(healthcare)).not.toMatch(/kafka|microservice|keycloak|\baws\b/i)
-  })
-
-  test('the healthcare project has facts and an architecture', () => {
-    const healthcare = projects.find((p) => p.id === 'healthcare')
-    expect(healthcare?.facts?.length).toBeGreaterThan(0)
-    expect(healthcare?.architecture?.nodes.length).toBeGreaterThan(0)
+  test('the healthcare project shows 3 portals and 4 login roles, nothing else, and has an architecture', () => {
+    const healthcare = projects.find((p) => p.id === 'healthcare')!
+    expect(healthcare.facts).toEqual([
+      { label: 'Role-based portals', value: '3' },
+      { label: 'Login roles', value: '4' },
+    ])
+    expect(healthcare.architecture?.nodes.length).toBeGreaterThan(0)
   })
 })
 
 describe('site', () => {
-  test('every link in site and projects is https: or mailto:', () => {
-    const links = [
-      site.github,
-      site.linkedin,
-      `mailto:${site.email}`,
-      ...projects.flatMap((p) => (p.links ?? []).map((l) => l.href)),
-    ]
-    for (const href of links) expect(href).toMatch(/^(https:|mailto:)/)
+  test('every link on the site is https: or mailto:', () => {
+    for (const href of [site.github, site.linkedin, `mailto:${site.email}`]) {
+      expect(href).toMatch(/^(https:|mailto:)/)
+    }
   })
 
   test('site.title equals the approved title', () => {
@@ -68,43 +63,66 @@ describe('site', () => {
   })
 })
 
-describe('public claims match the verified code (31 Oct 2026)', () => {
-  const healthcare = () => projects.find((p) => p.id === 'healthcare')!
-  const text = () => JSON.stringify(healthcare())
-
-  test('states four roles and never five', () => {
-    expect(healthcare().facts?.some((f) => /roles/i.test(f.label) && f.value === '4')).toBe(true)
-    expect(text()).not.toMatch(/\bfive\b|\b5 (staff )?roles\b/i)
+describe('healthcare case study', () => {
+  test('every section is filled in', () => {
+    expect(study.problem.length).toBeGreaterThanOrEqual(1)
+    expect(study.capabilities.length).toBeGreaterThanOrEqual(5)
+    expect(study.architecture.layers.length).toBeGreaterThanOrEqual(3)
+    expect(study.role.responsibilities.length).toBeGreaterThanOrEqual(5)
+    expect(study.decisions).toHaveLength(4)
+    for (const d of study.decisions) {
+      expect(d.title.trim()).not.toBe('')
+      expect(d.problem.trim()).not.toBe('')
+      expect(d.chose.trim()).not.toBe('')
+      expect(d.tradeoff.trim()).not.toBe('')
+    }
+    expect(study.flow.length).toBeGreaterThanOrEqual(5)
+    expect(study.testing.items.length).toBeGreaterThanOrEqual(3)
+    expect(study.testing.next.length).toBeGreaterThanOrEqual(3)
+    expect(study.stack.length).toBeGreaterThanOrEqual(3)
   })
 
-  test('has no filler facts', () => {
-    for (const f of healthcare().facts ?? []) expect(f.value).not.toBe('1')
+  test('its section ids are unique', () => {
+    const ids = study.sections.map((s) => s.id)
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  test('states four roles and never five', () => {
+    expect(publicText).toMatch(/four roles/i)
+    expect(publicText).not.toMatch(/\bfive\b|\b5 (staff )?roles\b/i)
   })
 
   test('describes clinic separation together with its continuity-of-care exception', () => {
-    expect(text()).toMatch(/continuity of care/i)
-    expect(text()).not.toMatch(/limited to their own clinic/i)
+    expect(publicText).toMatch(/continuity of care/i)
+    expect(publicText).not.toMatch(/limited to their own clinic/i)
   })
 
-  test('only claims a preview step for patient imports', () => {
-    const importLine = healthcare().features.find((f) => /bulk/i.test(f))
-    expect(importLine).toBeDefined()
-    expect(importLine).toMatch(/patients[^.]*preview/i)
-    expect(importLine).not.toMatch(/(medicines|lab tests)[^.]*preview/i)
+  test('claims a preview step only for patient imports', () => {
+    expect(publicText).not.toMatch(/(medicines|lab tests)[^."]*preview/i)
   })
 
   test('makes no security-testing claim the files do not evidence', () => {
-    expect(text()).not.toMatch(/low-privilege|re-?tested|penetration|pen test/i)
+    expect(publicText).not.toMatch(/low-privilege|re-?tested|penetration|pen test|vulnerabilit/i)
   })
 
-  test('leaks no access-control internals, secrets or configuration details', () => {
-    expect(text()).not.toMatch(
-      /\b(IDOR|bypass\w*|localStorage|rate[- ]?limit\w*|refresh token|secret\w*|credential\w*|password\w*|hostname)\b/i,
+  test('leaks no access-control internals, secrets, token details or configuration', () => {
+    expect(publicText).not.toMatch(
+      /\b(IDOR|bypass\w*|JWT|tokens?|localStorage|cookies?|rate[- ]?limit\w*|secrets?|credentials?|passwords?|hostnames?|Hibernate|\.env)\b/i,
     )
   })
 
+  test('uses only numbers that were counted against the code', () => {
+    const { stack: _stack, ...rest } = study
+    const numbers = JSON.stringify(rest).match(/\b\d+\b/g) ?? []
+    for (const n of numbers) expect(['3', '4', '355', '31', '2026']).toContain(n)
+  })
+
   test('omits crude counts (controllers, entities, endpoint annotations)', () => {
-    expect(text()).not.toMatch(/\b(46|37|190|193)\b/)
+    expect(publicText).not.toMatch(/\b(46|37|190|193)\b/)
+  })
+
+  test('says the test count is dated', () => {
+    expect(JSON.stringify(study.testing)).toMatch(/355[^"]*31 Oct 2026/)
   })
 })
 
@@ -135,5 +153,9 @@ describe('content rules', () => {
 
   test('the site never names the client clinic', () => {
     expect(JSON.stringify(everything)).not.toMatch(/\bplaceholder-client-name\b/i)
+  })
+
+  test('the site never names an employer', () => {
+    expect(JSON.stringify(everything)).not.toMatch(/trustt|novopay|mpowered/i)
   })
 })

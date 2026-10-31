@@ -18,16 +18,13 @@ export interface ArchEdge {
   label?: string
 }
 
+/** The card on the home page. The long-form story lives in a CaseStudy. */
 export interface Project {
-  /** Slug; also the URL hash, e.g. #healthcare */
   id: string
   title: string
   tagline: string
   status?: string
-  problem: string
-  role: string
-  features: string[]
-  /** Verifiable counts only. */
+  /** Counted against the code before publishing; never invented. */
   facts?: { label: string; value: string }[]
   stack: { group: string; items: string[] }[]
   architecture?: {
@@ -35,9 +32,40 @@ export interface Project {
     edges: ArchEdge[]
     caption?: string
   }
-  /** Real screenshots only. */
-  media?: { src: string; alt: string; caption?: string }[]
-  links?: { label: string; href: string; kind: 'repo' | 'demo' | 'article' }[]
+  /** Where the full case study lives, a path from the site root (one of site.pages). */
+  href: string
+}
+
+export interface Decision {
+  title: string
+  problem: string
+  chose: string
+  tradeoff: string
+}
+
+export interface FlowStep {
+  title: string
+  detail: string
+  /** Workflow states the record passes through at this step. */
+  states?: string[]
+}
+
+export interface CaseStudy {
+  id: string
+  title: string
+  tagline: string
+  status: string
+  facts: { label: string; value: string }[]
+  /** Headings for the on-page contents, in reading order. */
+  sections: { id: string; title: string }[]
+  problem: string[]
+  capabilities: { title: string; detail: string }[]
+  architecture: { intro: string; layers: { title: string; detail: string }[] }
+  role: { summary: string; responsibilities: string[] }
+  decisions: Decision[]
+  flow: FlowStep[]
+  testing: { summary: string; items: string[]; next: string[] }
+  stack: { group: string; items: string[] }[]
 }
 
 export type ServiceIcon = 'server' | 'plug' | 'database' | 'boxes' | 'shield' | 'wrench' | 'rocket'
@@ -60,6 +88,15 @@ export interface ProcessStep {
   id: string
   title: string
   detail: string
+}
+
+export type PageKey = 'home' | 'healthcare'
+
+export interface PageMeta {
+  /** Path from the site root, with a leading and trailing slash. */
+  path: string
+  title: string
+  description: string
 }
 
 export interface NavItem {

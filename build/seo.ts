@@ -1,5 +1,6 @@
 import { site } from '../src/content/site'
 import { skillGroups } from '../src/content/skills'
+import type { PageKey } from '../src/content/types'
 
 const escapeAttr = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -21,26 +22,33 @@ export function siteUrlFrom(envValue: string | undefined): string {
   return trimmed ? trimmed : site.url
 }
 
+/** Which page an html entry file is, from its path (either kind of separator). */
+export function pageKeyFor(filename: string): PageKey {
+  return filename.replace(/\\/g, '/').includes('/work/healthcare/') ? 'healthcare' : 'home'
+}
+
 /** Tags that need the absolute site URL. Empty when it is not known. */
-export function headTags(siteUrl: string | undefined): string {
+export function headTags(siteUrl: string | undefined, path = '/'): string {
   const root = normaliseSiteUrl(siteUrl)
   if (!root) return ''
+  const pageUrl = `${root}${path.replace(/^\//, '')}`
   const image = `${root}og-image.png`
   return [
-    `<link rel="canonical" href="${root}" />`,
-    `<meta property="og:url" content="${root}" />`,
+    `<link rel="canonical" href="${pageUrl}" />`,
+    `<meta property="og:url" content="${pageUrl}" />`,
     `<meta property="og:image" content="${image}" />`,
     `<meta name="twitter:image" content="${image}" />`,
   ].join('\n    ')
 }
 
-/** Description and social-card tags that do not depend on the site URL. */
-export function metaTags(): string {
-  const title = escapeAttr(site.title)
-  const description = escapeAttr(site.description)
+/** Description and social-card tags for a page; they do not depend on the site URL. */
+export function metaTags(page: PageKey = 'home'): string {
+  const meta = site.pages[page]
+  const title = escapeAttr(meta.title)
+  const description = escapeAttr(meta.description)
   return [
     `<meta name="description" content="${description}" />`,
-    `<meta property="og:type" content="website" />`,
+    `<meta property="og:type" content="${page === 'home' ? 'website' : 'article'}" />`,
     `<meta property="og:site_name" content="${escapeAttr(site.name)}" />`,
     `<meta property="og:title" content="${title}" />`,
     `<meta property="og:description" content="${description}" />`,
@@ -53,9 +61,12 @@ export function metaTags(): string {
 export function buildSitemap(siteUrl: string | undefined): string | null {
   const root = normaliseSiteUrl(siteUrl)
   if (!root) return null
+  const urls = Object.values(site.pages)
+    .map((p) => `  <url><loc>${root}${p.path.replace(/^\//, '')}</loc></url>`)
+    .join('\n')
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${root}</loc></url>
+${urls}
 </urlset>
 `
 }
@@ -65,19 +76,32 @@ export function buildRobots(siteUrl: string | undefined): string {
   return `User-agent: *\nAllow: /\n${root ? `\nSitemap: ${root}sitemap.xml\n` : ''}`
 }
 
-/** schema.org Person as a JSON string that is safe inside a <script> tag. */
-export function buildJsonLd(): string {
-  const data = {
-    '@context': 'https://schema.org',
+/** schema.org data for a page (Person for home, Article for the case study), safe inside a <script> tag. */
+export function buildJsonLd(page: PageKey = 'home'): string {
+  const person = {
     '@type': 'Person',
     name: site.name,
     url: site.url,
-    jobTitle: 'Java Backend Developer',
-    description: site.description,
-    address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressCountry: 'IN' },
-    knowsAbout: skillGroups.flatMap((g) => g.items),
     sameAs: [site.github, site.linkedin],
   }
+  const data =
+    page === 'home'
+      ? {
+          '@context': 'https://schema.org',
+          ...person,
+          jobTitle: 'Java Backend Developer',
+          description: site.description,
+          address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressCountry: 'IN' },
+          knowsAbout: skillGroups.flatMap((g) => g.items),
+        }
+      : {
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: site.pages[page].title,
+          description: site.pages[page].description,
+          url: `${site.url}${site.pages[page].path}`,
+          author: person,
+        }
   return JSON.stringify(data).replace(/</g, '\\u003c')
 }
 

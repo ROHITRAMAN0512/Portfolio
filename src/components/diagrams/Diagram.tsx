@@ -1,7 +1,5 @@
-import { useMemo, useState } from 'react'
-import { LazyMotion, domAnimation, m } from 'framer-motion'
+import { useId, useMemo, useState } from 'react'
 import type { ArchEdge, ArchNode, NodeKind } from '../../content/types'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { nextActive, type NodeEvent } from './nodeFocus'
 
 interface DiagramProps {
@@ -10,10 +8,6 @@ interface DiagramProps {
   caption?: string
   /** Accessible name for the whole diagram. */
   label: string
-  /** Show the travelling request dot (ignored under reduced motion). */
-  animate?: boolean
-  /** Node ids the dot visits, in order. */
-  flow?: string[]
 }
 
 const kindClass: Record<NodeKind, string> = {
@@ -24,15 +18,12 @@ const kindClass: Record<NodeKind, string> = {
 }
 
 /** Renders any {nodes, edges}. Node x/y are percentages of the box. */
-export function Diagram({ nodes, edges, caption, label, animate = false, flow = [] }: DiagramProps) {
-  const reduced = usePrefersReducedMotion()
+export function Diagram({ nodes, edges, caption, label }: DiagramProps) {
+  const uid = useId()
   const [activeId, setActiveId] = useState<string | null>(null)
   const byId = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes])
   const active = activeId ? byId.get(activeId) : undefined
   const send = (id: string, event: NodeEvent) => setActiveId((cur) => nextActive(cur, id, event))
-
-  const flowNodes = flow.map((id) => byId.get(id)).filter((n): n is ArchNode => n !== undefined)
-  const showDot = animate && !reduced && flowNodes.length >= 2
 
   return (
     <figure className="@container w-full" aria-label={label}>
@@ -65,26 +56,11 @@ export function Diagram({ nodes, edges, caption, label, animate = false, flow = 
           })}
         </svg>
 
-        {showDot && (
-          <LazyMotion features={domAnimation} strict>
-            <m.span
-              aria-hidden="true"
-              className="pointer-events-none absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_12px_var(--color-accent)]"
-              initial={{ left: `${flowNodes[0]!.x}%`, top: `${flowNodes[0]!.y}%`, opacity: 0 }}
-              animate={{
-                left: flowNodes.map((n) => `${n.x}%`),
-                top: flowNodes.map((n) => `${n.y}%`),
-                opacity: flowNodes.map((_, i) => (i === 0 || i === flowNodes.length - 1 ? 0 : 1)),
-              }}
-              transition={{ duration: 5, ease: 'linear', repeat: Infinity, repeatDelay: 0.6 }}
-            />
-          </LazyMotion>
-        )}
-
         {nodes.map((n) => (
           <button
             key={n.id}
             type="button"
+            aria-describedby={`${uid}-${n.id}`}
             onPointerEnter={(e) => send(n.id, { type: 'pointerenter', pointerType: e.pointerType })}
             onPointerLeave={(e) => send(n.id, { type: 'pointerleave', pointerType: e.pointerType })}
             onFocus={(e) => send(n.id, { type: 'focus', focusVisible: e.currentTarget.matches(':focus-visible') })}
@@ -122,7 +98,7 @@ export function Diagram({ nodes, edges, caption, label, animate = false, flow = 
             .filter(Boolean)
             .join(', ')
           return (
-            <li key={n.id}>
+            <li key={n.id} id={`${uid}-${n.id}`}>
               {n.label}
               {n.sub ? ` (${n.sub})` : ''}. {n.note ?? ''} {links ? `Connected to: ${links}.` : ''}
             </li>
