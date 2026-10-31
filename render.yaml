@@ -1,0 +1,23 @@
+# Render Blueprint for the portfolio: a free Static Site (no server, never sleeps).
+services:
+  - type: web
+    name: rohit-portfolio
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Public address of the site (for the canonical link, sitemap and share preview).
+      - key: VITE_SITE_URL
+        sync: false
+      # Web3Forms access key for the contact form. Leave empty to use the email fallback.
+      - key: VITE_WEB3FORMS_KEY
+        sync: false
+    headers:
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
