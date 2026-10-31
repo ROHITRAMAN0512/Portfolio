@@ -16,6 +16,8 @@ export interface Site {
     values: { title: string; text: string }[]
   }
   contact: { heading: string; intro: string }
+  sections: Record<'work' | 'services' | 'expertise' | 'process' | 'about', { eyebrow: string; title: string }>
+  ctas: Record<'work' | 'services' | 'process', { text: string; button: string }>
 }
 
 export const site: Site = {
@@ -61,6 +63,18 @@ export const site: Site = {
         text: 'Configuration, secrets, deployment and handover are part of the job, not an afterthought.',
       },
     ],
+  },
+  sections: {
+    work: { eyebrow: 'Selected work', title: 'Featured work' },
+    services: { eyebrow: 'Services', title: 'What I can build and fix for you' },
+    expertise: { eyebrow: 'Expertise', title: 'The tools I work with, and what I use them for' },
+    process: { eyebrow: 'Process', title: 'How a project runs' },
+    about: { eyebrow: 'About', title: 'Software built to be relied on' },
+  },
+  ctas: {
+    work: { text: 'Have a similar system in mind?', button: 'Tell me about it' },
+    services: { text: 'Not sure which one you need?', button: 'Describe the problem' },
+    process: { text: 'Ready to talk it through?', button: 'Start with a short conversation' },
   },
   contact: {
     heading: "Tell me what you're building.",
