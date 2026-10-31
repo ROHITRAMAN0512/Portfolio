@@ -110,7 +110,7 @@ type Project = {
   facts?: { label: string; value: string }[];     // verifiable counts only
   stack: { group: string; items: string[] }[];
   architecture?: {
-    nodes: { id: string; label: string; sub?: string; x: number; y: number; kind: 'client' | 'api' | 'data' | 'infra' }[];
+    nodes: { id: string; label: string; sub?: string; note?: string; x: number; y: number; kind: 'client' | 'api' | 'data' | 'infra' }[];
     edges: { from: string; to: string; label?: string }[];
     caption?: string;
   };
