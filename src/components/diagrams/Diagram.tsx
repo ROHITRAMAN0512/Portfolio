@@ -89,7 +89,7 @@ export function Diagram({ nodes, edges, caption, label, animate = false, flow = 
             onBlur={() => setActiveId(null)}
             onClick={() => setActiveId((cur) => (cur === n.id ? null : n.id))}
             style={{ left: `${n.x}%`, top: `${n.y}%` }}
-            className={`absolute max-w-[78px] -translate-x-1/2 -translate-y-1/2 rounded-lg border px-1.5 py-1.5 text-center text-[11px] leading-tight transition-colors @md:px-3 @md:py-2 @md:text-sm @min-[480px]:max-w-[150px] ${kindClass[n.kind]} ${
+            className={`absolute before:absolute before:-inset-x-3 before:-inset-y-3 before:content-[''] max-w-[78px] -translate-x-1/2 -translate-y-1/2 rounded-lg border px-1.5 py-1.5 text-center text-[11px] leading-tight transition-colors @md:px-3 @md:py-2 @md:text-sm @min-[480px]:max-w-[150px] ${kindClass[n.kind]} ${
               activeId === n.id ? '!border-accent text-accent' : 'text-text'
             }`}
           >

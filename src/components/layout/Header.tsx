@@ -31,10 +31,7 @@ export function Header() {
     return () => document.removeEventListener('keydown', onKey)
   }, [menuOpen])
 
-  const linkClass = (id: string) =>
-    `rounded-md px-3 py-2 text-sm transition-colors ${
-      active === id ? 'text-accent' : 'text-muted hover:text-text'
-    }`
+  const linkColor = (id: string) => (active === id ? 'text-accent' : 'text-muted hover:text-text')
 
   return (
     <header
@@ -43,7 +40,7 @@ export function Header() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-4 sm:px-6">
-        <a href="#top" className="font-display text-xl text-text">
+        <a href="#top" className="inline-flex min-h-11 items-center font-display text-xl text-text">
           {site.name}
         </a>
 
@@ -53,12 +50,12 @@ export function Header() {
               key={item.id}
               href={`#${item.id}`}
               aria-current={active === item.id ? 'true' : undefined}
-              className={linkClass(item.id)}
+              className={`inline-flex min-h-11 items-center rounded-md px-3 text-sm transition-colors ${linkColor(item.id)}`}
             >
               {item.label}
             </a>
           ))}
-          <Button href="#contact" className="ml-3 !min-h-10">
+          <Button href="#contact" className="ml-3">
             Let&apos;s talk
           </Button>
         </nav>
@@ -85,7 +82,7 @@ export function Header() {
                   href={`#${item.id}`}
                   aria-current={active === item.id ? 'true' : undefined}
                   onClick={() => setMenuOpen(false)}
-                  className={`flex min-h-11 items-center ${linkClass(item.id)} !px-0 text-base`}
+                  className={`flex min-h-11 items-center rounded-md text-base transition-colors ${linkColor(item.id)}`}
                 >
                   {item.label}
                 </a>
