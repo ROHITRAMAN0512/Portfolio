@@ -32,7 +32,8 @@ export function headTags(siteUrl: string | undefined, path = '/'): string {
   const root = normaliseSiteUrl(siteUrl)
   if (!root) return ''
   const pageUrl = `${root}${path.replace(/^\//, '')}`
-  const image = `${root}og-image.png`
+  const imagePath = Object.values(site.pages).find((p) => p.path === path)?.image ?? site.pages.home.image
+  const image = `${root}${imagePath.replace(/^\//, '')}`
   return [
     `<link rel="canonical" href="${pageUrl}" />`,
     `<meta property="og:url" content="${pageUrl}" />`,

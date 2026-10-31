@@ -34,6 +34,11 @@ export function Footer() {
             </a>
           </li>
           <li>
+            <a href={site.pages.healthcare.path} className={linkClass}>
+              Case study
+            </a>
+          </li>
+          <li>
             <a href="#top" className={linkClass}>
               <ArrowUp aria-hidden="true" className="size-4" />
               Back to top

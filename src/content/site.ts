@@ -41,9 +41,10 @@ export const site: Site = {
   title: homeTitle,
   description: homeDescription,
   pages: {
-    home: { path: '/', title: homeTitle, description: homeDescription },
+    home: { path: '/', title: homeTitle, description: homeDescription, image: '/og-image.png' },
     healthcare: {
       path: '/work/healthcare/',
+      image: '/og-healthcare.png',
       title: 'Healthcare platform case study — Rohit Raman',
       description:
         'How I built a multi-clinic healthcare platform: three role-based portals, one Java and Spring Boot API, and the engineering decisions behind it.',
@@ -91,7 +92,7 @@ export const site: Site = {
   sections: {
     work: { eyebrow: 'Selected work', title: 'Featured work' },
     services: { eyebrow: 'Services', title: 'What you can hire me for' },
-    expertise: { eyebrow: 'Expertise', title: 'The tools I work with, and what I use them for' },
+    expertise: { eyebrow: 'Expertise', title: 'What I work with' },
     process: { eyebrow: 'Process', title: 'How a project runs' },
     about: { eyebrow: 'About', title: 'Software built to be relied on' },
   },

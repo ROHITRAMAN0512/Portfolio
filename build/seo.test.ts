@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { describe, expect, test } from 'vitest'
 import { site } from '../src/content/site'
 import { buildJsonLd, buildRobots, buildSitemap, headTags, metaTags, noscriptBlock, pageKeyFor, siteUrlFrom } from './seo'
@@ -67,11 +67,26 @@ describe('headTags', () => {
 })
 
 describe('headTags for a page other than home', () => {
-  test('points the canonical link and og:url at that page, keeping the shared image', () => {
+  test('points the canonical link, og:url and share image at that page', () => {
     const tags = headTags('https://example.com', '/work/healthcare/')
     expect(tags).toContain('rel="canonical" href="https://example.com/work/healthcare/"')
     expect(tags).toContain('property="og:url" content="https://example.com/work/healthcare/"')
-    expect(tags).toContain('property="og:image" content="https://example.com/og-image.png"')
+    expect(tags).toContain('property="og:image" content="https://example.com/og-healthcare.png"')
+    expect(tags).toContain('name="twitter:image" content="https://example.com/og-healthcare.png"')
+  })
+
+  test('the home page keeps its own share image', () => {
+    expect(headTags('https://example.com', '/')).toContain('property="og:image" content="https://example.com/og-image.png"')
+  })
+
+  test('every page names a share image that exists and is 1200x630', () => {
+    for (const p of Object.values(site.pages)) {
+      const file = new URL(`../public${p.image}`, import.meta.url)
+      expect(existsSync(file), `${p.image} is missing from public/`).toBe(true)
+      const png = readFileSync(file)
+      expect(png.readUInt32BE(16)).toBe(1200)
+      expect(png.readUInt32BE(20)).toBe(630)
+    }
   })
 })
 

@@ -103,6 +103,8 @@ export interface PageMeta {
   path: string
   title: string
   description: string
+  /** Share-preview image under public/, 1200x630. */
+  image: string
 }
 
 export interface NavItem {

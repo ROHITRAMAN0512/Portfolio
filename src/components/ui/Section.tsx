@@ -9,7 +9,7 @@ interface SectionProps {
 
 export function Section({ id, title, eyebrow, children }: SectionProps) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="py-16 md:py-24 lg:py-28">
+    <section id={id} aria-labelledby={`${id}-title`} className="border-t border-line/60 py-16 md:py-24 lg:py-28">
       <div className="mx-auto max-w-[1120px] px-4 sm:px-6">
         {eyebrow && (
           <p className="mb-3 font-mono text-xs uppercase tracking-[0.18em] text-accent">{eyebrow}</p>
