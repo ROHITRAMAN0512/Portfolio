@@ -37,14 +37,14 @@ export const projects: Project[] = [
     architecture: {
       caption: 'A single deployable API, organised by feature.',
       nodes: [
-        { id: 'fd', label: 'Front desk portal', sub: 'React', note: 'Registration, appointments, vitals and billing.', x: 11, y: 20, kind: 'client' },
-        { id: 'doc', label: 'Doctor portal', sub: 'React', note: 'Queue, consultation and prescriptions.', x: 11, y: 50, kind: 'client' },
-        { id: 'lab', label: 'Lab portal', sub: 'React', note: 'Test orders, samples and reports.', x: 11, y: 80, kind: 'client' },
-        { id: 'api', label: 'REST API', sub: 'Spring Boot', note: 'One application that every portal talks to.', x: 36, y: 50, kind: 'api' },
+        { id: 'fd', label: 'Front desk portal', sub: 'React', note: 'Registration, appointments, vitals and billing.', x: 15, y: 20, kind: 'client' },
+        { id: 'doc', label: 'Doctor portal', sub: 'React', note: 'Queue, consultation and prescriptions.', x: 15, y: 50, kind: 'client' },
+        { id: 'lab', label: 'Lab portal', sub: 'React', note: 'Test orders, samples and reports.', x: 15, y: 80, kind: 'client' },
+        { id: 'api', label: 'REST API', sub: 'Spring Boot', note: 'One application that every portal talks to.', x: 38, y: 50, kind: 'api' },
         { id: 'auth', label: 'Sign-in and roles', sub: 'Spring Security · JWT', note: 'Checks who is calling and what their role allows.', x: 62, y: 20, kind: 'api' },
         { id: 'scope', label: 'Clinic scope', sub: 'Per request', note: "Limits staff to their own clinic's data.", x: 62, y: 50, kind: 'api' },
         { id: 'modules', label: 'Feature modules', sub: 'Patients · billing · labs', note: 'Each feature owns its own controller, service and data access.', x: 62, y: 80, kind: 'api' },
-        { id: 'db', label: 'PostgreSQL', sub: 'Single database', note: 'Stores patients, visits, bills, lab orders and records.', x: 88, y: 50, kind: 'data' },
+        { id: 'db', label: 'PostgreSQL', sub: 'Single database', note: 'Stores patients, visits, bills, lab orders and records.', x: 85, y: 50, kind: 'data' },
       ],
       edges: [
         { from: 'fd', to: 'api' },
