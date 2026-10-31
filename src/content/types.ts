@@ -68,13 +68,19 @@ export interface CaseStudy {
   stack: { group: string; items: string[] }[]
 }
 
-export type ServiceIcon = 'server' | 'plug' | 'database' | 'boxes' | 'shield' | 'wrench' | 'rocket'
+export type ServiceIcon = 'server' | 'plug' | 'database' | 'shield' | 'bug' | 'gauge' | 'rocket'
 
 export interface Service {
   id: string
+  /** What the client can hire me for. */
   title: string
-  benefit: string
+  /** The situation the client is in, in their words. */
+  problem: string
+  /** What they get. No promised numbers. */
+  outcome: string
   icon: ServiceIcon
+  /** The contact-form project type this service preselects. */
+  projectType: string
 }
 
 export interface SkillGroup {

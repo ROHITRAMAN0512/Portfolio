@@ -2,7 +2,7 @@ import type { NavItem, PageKey, PageMeta } from './types'
 
 const homeTitle = 'Rohit Raman — Java Backend Developer for Freelance Projects'
 const homeDescription =
-  'Java backend developer in Bengaluru. I build secure APIs, microservices and databases for healthcare and fintech products, and keep them running.'
+  'Java backend developer in Bengaluru. I build secure Spring Boot APIs and databases for healthcare and fintech products, and keep them running.'
 
 export interface Site {
   /** Public address of the site, no trailing slash. Used for share previews, canonical links and the sitemap. */
@@ -23,9 +23,16 @@ export interface Site {
     paragraphs: string[]
     values: { title: string; text: string }[]
   }
-  contact: { heading: string; intro: string }
+  contact: {
+    heading: string
+    intro: string
+    /** The project types the form offers; each service preselects one of them. */
+    projectTypes: string[]
+    availability: string
+    /** What a good first message includes. */
+    include: string[]
+  }
   sections: Record<'work' | 'services' | 'expertise' | 'process' | 'about', { eyebrow: string; title: string }>
-  ctas: Record<'services' | 'process', { text: string; button: string }>
 }
 
 export const site: Site = {
@@ -62,7 +69,7 @@ export const site: Site = {
   },
   about: {
     paragraphs: [
-      "I'm a Java backend developer based in Bengaluru. I build the part of a product that users never see but always depend on: the APIs, the data model, sign-in and permissions, and the services that tie them together. Most of my work is in healthcare and fintech, where mistakes are expensive.",
+      "I've been a professional backend developer since 2023, based in Bengaluru. I build the part of a product that users never see but always depend on: the APIs, the data model, sign-in and permissions, and the services that tie them together. I have worked on healthcare and fintech products.",
       'I start with the business problem, not the framework. I agree a small first milestone, ship it, and build from there. I choose plain, well-understood technology over clever technology, secure things by default, and leave tests and notes so the next developer can pick the work up.',
       'I also take on existing codebases: fixing bugs, speeding up slow queries, connecting third-party APIs, and keeping applications running after launch.',
     ],
@@ -83,18 +90,17 @@ export const site: Site = {
   },
   sections: {
     work: { eyebrow: 'Selected work', title: 'Featured work' },
-    services: { eyebrow: 'Services', title: 'What I can build and fix for you' },
+    services: { eyebrow: 'Services', title: 'What you can hire me for' },
     expertise: { eyebrow: 'Expertise', title: 'The tools I work with, and what I use them for' },
     process: { eyebrow: 'Process', title: 'How a project runs' },
     about: { eyebrow: 'About', title: 'Software built to be relied on' },
   },
-  ctas: {
-    services: { text: 'Not sure which one you need?', button: 'Describe the problem' },
-    process: { text: 'Ready to talk it through?', button: 'Start with a short conversation' },
-  },
   contact: {
     heading: "Tell me what you're building.",
     intro:
-      "Share what the product does, what is broken or missing, and any dates that matter. I'll reply by email with questions or a suggested next step.",
+      "Tell me about the product and the problem. I'll reply by email with questions or a suggested next step.",
+    projectTypes: ['Backend or API build', 'Integration', 'Bug fix or maintenance', 'Something else'],
+    availability: 'Limited availability alongside a full-time role.',
+    include: ['What the product does and who uses it', 'What is broken or missing', 'Any dates that matter'],
   },
 }

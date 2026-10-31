@@ -1,5 +1,24 @@
 import type { SkillGroup } from './types'
 
+/**
+ * Skills the clinic case study actually shows, mapped to a keyword that must
+ * appear in it (a test checks this). Anything not listed here is a skill from
+ * other work and is deliberately not tagged.
+ */
+export const caseStudyEvidence: Record<string, string> = {
+  Java: 'Java 21',
+  'Spring Boot': 'Spring Boot',
+  'Spring Security': 'Spring Security',
+  PostgreSQL: 'PostgreSQL',
+  'REST APIs': 'REST API',
+  'Database design': 'data model',
+  Authentication: 'sign-in',
+  'Role-based access control': 'roles',
+  Docker: 'Docker',
+  Deployment: 'deployed',
+  'Healthcare technology': 'clinic',
+}
+
 export const skillGroups: SkillGroup[] = [
   {
     id: 'core',

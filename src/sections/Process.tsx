@@ -2,7 +2,6 @@ import { processSteps } from '../content/process'
 import { site } from '../content/site'
 import { Section } from '../components/ui/Section'
 import { Reveal } from '../components/ui/Reveal'
-import { Cta } from '../components/ui/Cta'
 
 export function Process() {
   return (
@@ -18,7 +17,6 @@ export function Process() {
           </li>
         ))}
       </ol>
-      <Cta text={site.ctas.process.text} button={site.ctas.process.button} />
     </Section>
   )
 }

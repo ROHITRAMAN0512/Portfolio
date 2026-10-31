@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from 'react'
 import { CheckCircle2, Send } from 'lucide-react'
 import { site } from '../content/site'
 import { validateContact, type ContactInput, type FieldErrors } from '../lib/validate'
 import { submitContact } from '../lib/submitContact'
+import { projectTypePrefill } from '../lib/prefill'
 import { Button } from './ui/Button'
 
 type Status = 'idle' | 'sending' | 'sent' | 'mailto' | 'error'
 type FieldName = 'name' | 'email' | 'message'
 
-const PROJECT_TYPES = ['Backend or API build', 'Integration', 'Bug fix or maintenance', 'Something else']
 const FIELD_ORDER: FieldName[] = ['name', 'email', 'message']
 
 const emptyValues: ContactInput = { name: '', email: '', projectType: '', message: '', botcheck: false }
@@ -24,6 +24,7 @@ export function ContactForm() {
   const sendingRef = useRef(false)
   const fieldRefs = useRef<Partial<Record<FieldName, HTMLInputElement | HTMLTextAreaElement | null>>>({})
   const sentRef = useRef<HTMLDivElement>(null)
+  const preferredType = useSyncExternalStore(projectTypePrefill.subscribe, projectTypePrefill.get)
 
   const errors: FieldErrors = validateContact(values)
   const visibleError = (f: FieldName) => (touched[f] ? errors[f] : undefined)
@@ -31,6 +32,11 @@ export function ContactForm() {
   useEffect(() => {
     if (status === 'sent') sentRef.current?.focus()
   }, [status])
+
+  // A service's "Discuss this" link preselects the matching project type.
+  useEffect(() => {
+    if (preferredType) setValues((v) => ({ ...v, projectType: preferredType }))
+  }, [preferredType])
 
   const set = <K extends keyof ContactInput>(key: K, value: ContactInput[K]) =>
     setValues((v) => ({ ...v, [key]: value }))
@@ -153,7 +159,7 @@ export function ContactForm() {
           className={`${inputClass} border-line`}
         >
           <option value="">Select a type</option>
-          {PROJECT_TYPES.map((t) => (
+          {site.contact.projectTypes.map((t) => (
             <option key={t} value={t}>
               {t}
             </option>

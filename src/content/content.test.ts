@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { site } from './site'
 import { services } from './services'
-import { skillGroups } from './skills'
+import { caseStudyEvidence, skillGroups } from './skills'
 import { processSteps } from './process'
 import { projects } from './projects'
 import { healthcareCaseStudy as study } from './caseStudy'
@@ -123,6 +123,73 @@ describe('healthcare case study', () => {
 
   test('says the test count is dated', () => {
     expect(JSON.stringify(study.testing)).toMatch(/355[^"]*31 Oct 2026/)
+  })
+})
+
+describe('services framed as client problems', () => {
+  test('each states the client problem and the outcome in plain sentences', () => {
+    for (const s of services) {
+      expect(s.problem.trim().length).toBeGreaterThan(20)
+      expect(s.outcome.trim().length).toBeGreaterThan(20)
+      expect(s.problem).toMatch(/[.?]$/)
+      expect(s.outcome).toMatch(/\.$/)
+    }
+  })
+
+  test('titles and ids are unique', () => {
+    expect(new Set(services.map((s) => s.title)).size).toBe(services.length)
+    expect(new Set(services.map((s) => s.id)).size).toBe(services.length)
+  })
+
+  test('each points at a project type the contact form offers', () => {
+    for (const s of services) expect(site.contact.projectTypes).toContain(s.projectType)
+  })
+
+  test('the seven services are the ones the owner listed', () => {
+    expect(services.map((s) => s.title)).toEqual([
+      'Java and Spring Boot backend development',
+      'REST API development and integration',
+      'Database design and optimization',
+      'Authentication and authorization',
+      'Bug fixing in existing applications',
+      'Backend performance improvements',
+      'Deployment and maintenance',
+    ])
+  })
+})
+
+describe('credibility', () => {
+  test('every skill tagged as shown in the case study really appears in it', () => {
+    const text = JSON.stringify({ projects, study }).toLowerCase()
+    const allItems = skillGroups.flatMap((g) => g.items)
+    for (const [skill, keyword] of Object.entries(caseStudyEvidence)) {
+      expect(allItems).toContain(skill)
+      expect(text).toContain(keyword.toLowerCase())
+    }
+  })
+
+  test('skills the case study does not show are not tagged', () => {
+    for (const untagged of ['Kafka', 'Keycloak', 'AWS', 'MySQL', 'FHIR', 'Fintech', 'Microservices']) {
+      expect(Object.keys(caseStudyEvidence)).not.toContain(untagged)
+    }
+  })
+
+  test('About says professional backend developer since 2023, and names no employer', () => {
+    const about = JSON.stringify(site.about)
+    expect(about).toMatch(/professional backend developer since 2023/i)
+    expect(about).not.toMatch(/trustt|novopay|mpowered/i)
+  })
+
+  test('About makes no unconfirmed share-of-work claim', () => {
+    expect(JSON.stringify(site.about)).not.toMatch(/most of my work|majority of my/i)
+  })
+
+  test('the availability line is the approved one', () => {
+    expect(site.contact.availability).toBe('Limited availability alongside a full-time role.')
+  })
+
+  test('the contact section tells visitors what a good first message includes', () => {
+    expect(site.contact.include.length).toBeGreaterThanOrEqual(3)
   })
 })
 

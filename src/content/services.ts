@@ -1,50 +1,62 @@
 import type { Service } from './types'
 
+/** Each service is written from the client's side: their problem, then what they get. */
 export const services: Service[] = [
   {
     id: 'backend',
-    title: 'Backend application development',
-    benefit: 'A solid server-side foundation for your product, built to be tested, deployed and extended.',
+    title: 'Java and Spring Boot backend development',
+    problem: 'You need a backend for a new product, or to take over one that has outgrown its first version.',
+    outcome:
+      'A tested Spring Boot service with a clear structure, ready to deploy and easy for the next developer to extend.',
     icon: 'server',
+    projectType: 'Backend or API build',
   },
   {
     id: 'api',
     title: 'REST API development and integration',
-    benefit:
-      'Clean, documented APIs for your apps, plus reliable connections to the third-party services you depend on.',
+    problem: 'Your apps need an API, or they need to talk to other systems and partners.',
+    outcome: 'Documented REST APIs and reliable integrations, with the failure cases handled and not only the happy path.',
     icon: 'plug',
+    projectType: 'Integration',
   },
   {
     id: 'database',
     title: 'Database design and optimization',
-    benefit: 'A data model that fits your business, and queries that stay fast as the data grows.',
+    problem: 'Your data model is hard to change, or your queries are slow and getting slower.',
+    outcome: 'A schema that fits the business, and queries that are measured first and then tuned.',
     icon: 'database',
-  },
-  {
-    id: 'microservices',
-    title: 'Microservices development',
-    benefit:
-      'Services split along real business boundaries, talking to each other through clear contracts and events when it helps.',
-    icon: 'boxes',
+    projectType: 'Backend or API build',
   },
   {
     id: 'auth',
     title: 'Authentication and authorization',
-    benefit: 'Secure sign-in and role-based access, so each user sees and changes only what they should.',
+    problem: 'People can see or change things they should not, or sign-in is hard to manage.',
+    outcome: 'Role-based access enforced on the server, so each person reaches only what their role allows.',
     icon: 'shield',
+    projectType: 'Backend or API build',
   },
   {
     id: 'fixes',
-    title: 'Bug fixing and performance improvements',
-    benefit:
-      'Find the cause, fix it properly, and add a test so it stays fixed. Slow endpoints and queries get measured, then tuned.',
-    icon: 'wrench',
+    title: 'Bug fixing in existing applications',
+    problem: 'Something in your live application is broken and nobody is sure why.',
+    outcome: 'The cause found, fixed properly, and covered by a test so it stays fixed.',
+    icon: 'bug',
+    projectType: 'Bug fix or maintenance',
+  },
+  {
+    id: 'performance',
+    title: 'Backend performance improvements',
+    problem: 'It works, but it is slow or struggles when more people use it.',
+    outcome: 'Slow endpoints and queries measured, then tuned, with the before and after shown to you.',
+    icon: 'gauge',
+    projectType: 'Bug fix or maintenance',
   },
   {
     id: 'deploy',
-    title: 'Deployment, maintenance and technical support',
-    benefit:
-      'Containerised deployment, environment setup and ongoing help, so the application stays up after launch.',
+    title: 'Deployment and maintenance',
+    problem: 'It runs on a laptop but not reliably in production, or nobody looks after it once it has launched.',
+    outcome: 'A repeatable deployment, a documented environment, and ongoing fixes and changes after launch.',
     icon: 'rocket',
+    projectType: 'Bug fix or maintenance',
   },
 ]
