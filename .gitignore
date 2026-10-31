@@ -5,3 +5,6 @@ dist
 .superpowers
 *.log
 *.tsbuildinfo
+
+# Local-only word list for the "never name the client" tests (see src/content/content.test.ts)
+forbidden-words.local.txt

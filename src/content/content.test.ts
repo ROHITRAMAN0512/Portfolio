@@ -1,3 +1,5 @@
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
 import { site } from './site'
 import { services } from './services'
@@ -7,6 +9,36 @@ import { projects } from './projects'
 import { healthcareCaseStudy as study } from './caseStudy'
 
 const everything = { site, services, skillGroups, processSteps, projects, study }
+
+/**
+ * The client's name is deliberately NOT written anywhere in this public repo.
+ * To enforce the rule on your own machine, list the words to keep out, one per
+ * line, in `forbidden-words.local.txt` at the repo root (it is git-ignored). On
+ * a machine without that file the two checks below are skipped.
+ */
+const repoRoot = new URL('../../', import.meta.url)
+const forbiddenFile = new URL('forbidden-words.local.txt', repoRoot)
+const forbiddenWords = existsSync(forbiddenFile)
+  ? readFileSync(forbiddenFile, 'utf8')
+      .split(/\r?\n/)
+      .map((w) => w.trim())
+      .filter(Boolean)
+  : []
+const forbiddenRegex = forbiddenWords.length
+  ? new RegExp(`\\b(${forbiddenWords.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'i')
+  : null
+
+function readableFiles(dir: URL, found: string[] = []): string[] {
+  const path = dir.pathname.replace(/^\/([A-Za-z]:)/, '$1')
+  for (const entry of readdirSync(path, { withFileTypes: true })) {
+    if (['node_modules', '.git', 'dist', 'public'].includes(entry.name)) continue
+    const child = new URL(`${entry.name}${entry.isDirectory() ? '/' : ''}`, dir)
+    if (entry.isDirectory()) readableFiles(child, found)
+    else if (/\.(ts|tsx|md|html|json|yml|yaml)$/.test(entry.name) && !entry.name.endsWith('.local.txt'))
+      found.push(join(path, entry.name))
+  }
+  return found
+}
 const publicText = JSON.stringify({ projects, study })
 
 describe('projects', () => {
@@ -218,8 +250,18 @@ describe('content rules', () => {
     expect(JSON.stringify(everything)).not.toMatch(/\d\s?%/)
   })
 
-  test('the site never names the client clinic', () => {
-    expect(JSON.stringify(everything)).not.toMatch(/\bplaceholder-client-name\b/i)
+  test.skipIf(!forbiddenRegex)('the site content never names the client (words come from a git-ignored local file)', () => {
+    expect(JSON.stringify(everything)).not.toMatch(forbiddenRegex!)
+  })
+
+  test.skipIf(!forbiddenRegex)('no tracked source, doc or config file in the repo names the client', () => {
+    const hits = readableFiles(repoRoot).filter((file) => forbiddenRegex!.test(readFileSync(file, 'utf8')))
+    expect(hits).toEqual([])
+  })
+
+  test('public text never shows class-style names of internal components or custom headers', () => {
+    expect(publicText).not.toMatch(/\b[A-Za-z]+(Guard|Resolver|Aspect|Interceptor|Filter)\b/)
+    expect(publicText).not.toMatch(/\bX-[A-Za-z]+(-[A-Za-z]+)+\b/)
   })
 
   test('the site never names an employer', () => {

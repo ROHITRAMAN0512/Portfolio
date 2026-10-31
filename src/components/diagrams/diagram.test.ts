@@ -44,5 +44,7 @@ describe.each(diagrams)('%s diagram', (_name, d) => {
 
   test('no node text leaks access-control internals', () => {
     expect(JSON.stringify(d)).not.toMatch(/\b(JWT|tokens?|secrets?|passwords?|Hibernate)\b/i)
+    expect(JSON.stringify(d)).not.toMatch(/\b[A-Za-z]+(Guard|Resolver|Aspect|Interceptor|Filter)\b/)
+    expect(JSON.stringify(d)).not.toMatch(/\bX-[A-Za-z]+(-[A-Za-z]+)+\b/)
   })
 })

@@ -53,6 +53,7 @@ The tests enforce these, so a change that breaks them will not build:
 - Client outcomes and high-level decisions only. Never describe how access control works inside, name a weakness, or show file paths, class names, secrets, hostnames or configuration.
 - No client or employer names, no percentages, no invented numbers. Every number must be counted against the real code first. The only counts allowed in the case study are 3 portals, 4 login roles, and "355 backend unit tests (counted 31 Oct 2026)". Re-count before you publish a new number.
 - No screenshots until you have checked them for patient and clinic details.
+- This repository is public, so the client's name is not written anywhere in it. To let the tests check for it on your own computer, list the words to keep out, one per line, in `forbidden-words.local.txt` in the project folder (git ignores that file). Without it, those two checks are skipped.
 
 ## Add another project
 
