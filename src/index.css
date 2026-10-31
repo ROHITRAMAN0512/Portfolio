@@ -1,0 +1,52 @@
+@import 'tailwindcss';
+@import './fonts.css';
+
+@theme {
+  --color-bg: #0a0e14;
+  --color-surface: #0f1520;
+  --color-surface-2: #151d2b;
+  --color-line: #1f2937;
+  --color-text: #e6eaf2;
+  --color-muted: #8b97ab;
+  --color-accent: #2dd4bf;
+
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+:root {
+  color-scheme: dark;
+  --header-h: 4rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  section[id] {
+    scroll-margin-top: var(--header-h);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
