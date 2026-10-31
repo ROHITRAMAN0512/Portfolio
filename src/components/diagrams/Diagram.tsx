@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { LazyMotion, domAnimation, m } from 'framer-motion'
 import type { ArchEdge, ArchNode, NodeKind } from '../../content/types'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import { nextActive, type NodeEvent } from './nodeFocus'
 
 interface DiagramProps {
   nodes: ArchNode[]
@@ -28,6 +29,7 @@ export function Diagram({ nodes, edges, caption, label, animate = false, flow = 
   const [activeId, setActiveId] = useState<string | null>(null)
   const byId = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes])
   const active = activeId ? byId.get(activeId) : undefined
+  const send = (id: string, event: NodeEvent) => setActiveId((cur) => nextActive(cur, id, event))
 
   const flowNodes = flow.map((id) => byId.get(id)).filter((n): n is ArchNode => n !== undefined)
   const showDot = animate && !reduced && flowNodes.length >= 2
@@ -83,11 +85,11 @@ export function Diagram({ nodes, edges, caption, label, animate = false, flow = 
           <button
             key={n.id}
             type="button"
-            onMouseEnter={() => setActiveId(n.id)}
-            onMouseLeave={() => setActiveId(null)}
-            onFocus={() => setActiveId(n.id)}
-            onBlur={() => setActiveId(null)}
-            onClick={() => setActiveId((cur) => (cur === n.id ? null : n.id))}
+            onPointerEnter={(e) => send(n.id, { type: 'pointerenter', pointerType: e.pointerType })}
+            onPointerLeave={(e) => send(n.id, { type: 'pointerleave', pointerType: e.pointerType })}
+            onFocus={(e) => send(n.id, { type: 'focus', focusVisible: e.currentTarget.matches(':focus-visible') })}
+            onBlur={() => send(n.id, { type: 'blur' })}
+            onClick={() => send(n.id, { type: 'click' })}
             style={{ left: `${n.x}%`, top: `${n.y}%` }}
             className={`absolute before:absolute before:-inset-x-3 before:-inset-y-3 before:content-[''] max-w-[78px] -translate-x-1/2 -translate-y-1/2 rounded-lg border px-1.5 py-1.5 text-center text-[11px] leading-tight transition-colors @md:px-3 @md:py-2 @md:text-sm @min-[480px]:max-w-[150px] ${kindClass[n.kind]} ${
               activeId === n.id ? '!border-accent text-accent' : 'text-text'

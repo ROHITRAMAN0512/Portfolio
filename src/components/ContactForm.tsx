@@ -64,6 +64,10 @@ export function ContactForm() {
         setNotice({ message: `${result.message} Your text is still here.`, href: result.mailtoHref })
         setStatus('error')
       }
+    } catch {
+      // Anything unexpected must never leave the form stuck on "Sending…".
+      setNotice({ message: 'Something went wrong while sending. Your text is still here.', href: `mailto:${site.email}` })
+      setStatus('error')
     } finally {
       sendingRef.current = false
     }

@@ -73,6 +73,13 @@ describe('submitContact', () => {
     expect(result.status).toBe('error')
   })
 
+  test('a message with a lone surrogate still resolves instead of throwing', async () => {
+    const { impl } = fakeFetch({ ok: true, json: { success: true } })
+    const broken = { ...input, message: 'a pasted message that ends in half an emoji \uD83D' }
+    await expect(submitContact(broken, opts(impl, null))).resolves.toMatchObject({ status: 'mailto' })
+    await expect(submitContact(broken, opts(impl))).resolves.toEqual({ status: 'sent' })
+  })
+
   test('a tripped honeypot reports sent without calling fetch', async () => {
     const { impl, calls } = fakeFetch({ ok: true, json: { success: true } })
     const result = await submitContact({ ...input, botcheck: true }, opts(impl))

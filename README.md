@@ -85,16 +85,16 @@ The key is public by design: it can only send messages to your email. Without it
 
 A Render **Static Site** is free and never goes to sleep. This is different from Render's free "web service", which sleeps when idle. This site has no server, so it does not need one.
 
-1. Put the project on GitHub (a new, empty repo; push this folder to it). Nothing has been pushed for you.
+1. Put the project on GitHub (a new, empty repo; push this folder to it). Nothing has been pushed for you. The site's code is on the branch `feature/build-portfolio`; the `main` branch holds only the design documents. Either merge that branch into `main` before you deploy, or tell Render to use `feature/build-portfolio` (in step 2 pick that branch, or later under **Settings**, **Branch**). A deploy of `main` before the merge will fail because there is no site in it yet.
 2. In Render, choose **New**, then **Blueprint**, pick the repo, and click **Apply**. Render reads `render.yaml` and sets everything up.
-3. When asked, fill in `VITE_WEB3FORMS_KEY`. Leave `VITE_SITE_URL` empty for now.
+3. When asked, fill in `VITE_WEB3FORMS_KEY`. Leave `VITE_SITE_URL` empty for now. If Render will not accept an empty value, type `https://example.com` and replace it in step 5.
 4. Wait for the first deploy. Render gives you an address like `https://rohit-portfolio.onrender.com`.
 5. Go to the service's **Environment** tab, set `VITE_SITE_URL` to that address, and redeploy. Now the share preview and sitemap work.
 6. Optional: add your own domain under **Settings**, then **Custom Domains**, and update `VITE_SITE_URL` to match.
 
 Without the Blueprint: **New**, **Static Site**, build command `npm ci && npm run build`, publish directory `dist`, and add the two variables yourself.
 
-After this, every push to the main branch updates the live site by itself.
+After this, every push to the branch Render is watching updates the live site by itself.
 
 ## Cloudflare Pages works too
 
@@ -108,7 +108,7 @@ Use the same repo. Build command `npm run build`, output folder `dist`, and set 
 
 ## Change the share-preview image
 
-The image is `public/og-image.png`. It is made from `scripts/og.html`. Edit that file, then run this from the project folder, with the full path to your own folder:
+The image is `public/og-image.png`. It is made from `scripts/og.html`. Edit that file, then run this from the project folder, with the full path to your own folder. On Windows, replace `chrome` with the full path to `chrome.exe`, for example `"C:\Program Files\Google\Chrome\Application\chrome.exe"`:
 
 ```bash
 chrome --headless=new --hide-scrollbars --window-size=1200,630 --screenshot=public/og-image.png file:///FULL/PATH/TO/portfolio/scripts/og.html

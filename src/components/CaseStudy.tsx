@@ -41,7 +41,7 @@ function Block({ project, block }: { project: Project; block: ProjectBlock }) {
       )
     case 'facts':
       return (
-        <dl className="grid grid-cols-3 gap-3">
+        <dl className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-3">
           {project.facts?.map((f) => (
             <div key={f.label} className="rounded-xl border border-line bg-surface-2 p-4">
               <dd className="font-display text-3xl text-text">{f.value}</dd>

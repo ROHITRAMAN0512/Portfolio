@@ -3,11 +3,15 @@ import type { ContactInput } from './validate'
 const MAX_HREF_LENGTH = 1800
 const SHORTENED_NOTE = '…(message shortened, please paste the rest)'
 
+/** Replaces unpaired surrogates (half an emoji from a broken paste) so encodeURIComponent cannot throw. */
+const wellFormed = (s: string) =>
+  s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '�')
+
 export function buildMailto(to: string, input: ContactInput): string {
-  const name = input.name.trim()
-  const email = input.email.trim()
-  const projectType = input.projectType.trim() || 'Not specified'
-  const message = input.message.trim()
+  const name = wellFormed(input.name.trim())
+  const email = wellFormed(input.email.trim())
+  const projectType = wellFormed(input.projectType.trim()) || 'Not specified'
+  const message = wellFormed(input.message.trim())
 
   const subject = encodeURIComponent(`Project enquiry from ${name}`)
   const hrefFor = (text: string) => {

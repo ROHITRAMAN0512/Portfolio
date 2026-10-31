@@ -44,7 +44,7 @@ export function Work() {
                 </div>
               </div>
               {p.facts && p.facts.length > 0 && (
-                <dl className="grid grid-cols-3 gap-3 self-center md:grid-cols-1">
+                <dl className="grid grid-cols-1 gap-3 self-center min-[400px]:grid-cols-3 md:grid-cols-1">
                   {p.facts.map((f) => (
                     <div key={f.label} className="rounded-xl border border-line bg-surface-2 p-4">
                       <dd className="font-display text-3xl text-text">{f.value}</dd>

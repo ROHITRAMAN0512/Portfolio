@@ -34,6 +34,7 @@ export function Button({
     return (
       <a
         href={href}
+        onClick={onClick}
         className={classes}
         {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       >

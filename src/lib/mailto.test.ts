@@ -44,6 +44,12 @@ describe('buildMailto', () => {
     expect(bodyOf(href).endsWith('…(message shortened, please paste the rest)')).toBe(true)
   })
 
+  test('a lone surrogate (half an emoji, from a broken paste) does not throw and becomes a replacement character', () => {
+    const href = buildMailto('me@x.com', { ...input, name: 'As\uD83Dha', message: 'half an emoji \uD83D then more text here' })
+    expect(bodyOf(href)).toContain('half an emoji � then more text here')
+    expect(bodyOf(href)).toContain('Name: As�ha')
+  })
+
   test('a long emoji message does not throw and stays under 1800 characters', () => {
     const href = buildMailto('me@x.com', { ...input, message: '😀'.repeat(1000) })
     expect(href.length).toBeLessThanOrEqual(1800)
